@@ -1,4 +1,6 @@
 /*jshint worker: true*/
+import './deferred_worker'; // deferred modules selectively loaded in each thread
+
 import Thread from './utils/thread';
 import Utils from './utils/utils';
 import log from './utils/log';
@@ -11,6 +13,11 @@ import {StyleParser} from './styles/style_parser';
 import {StyleManager} from './styles/style_manager';
 import {parseLayers} from './styles/layer';
 import Texture from './gl/texture';
+
+import './sources/geojson';
+import './sources/topojson';
+import './sources/mvt';
+import './sources/raster';
 
 export var SceneWorker = self;
 

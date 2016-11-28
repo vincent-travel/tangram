@@ -1,8 +1,10 @@
 import DataSource, {NetworkTileSource} from './data_source';
 import Geo from '../geo';
 
-import Pbf from 'pbf';
-import {VectorTile, VectorTileFeature} from 'vector-tile';
+// import Pbf from 'pbf';
+// import {VectorTile, VectorTileFeature} from 'vector-tile';
+import deferredModules from '../deferred';
+const {Pbf, VectorTile, VectorTileFeature} = deferredModules; // loaded conditionally per thread
 
 /**
  Mapbox Vector Tile format

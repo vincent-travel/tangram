@@ -4,7 +4,9 @@ import {decodeMultiPolygon} from './mvt';
 import Geo from '../geo';
 
 // For tiling GeoJSON client-side
-import geojsonvt from 'geojson-vt';
+// import geojsonvt from 'geojson-vt';
+import deferredModules from '../deferred';
+const {geojsonvt} = deferredModules; // loaded conditionally per thread
 
 /**
  GeoJSON standalone (non-tiled) source

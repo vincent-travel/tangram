@@ -3,9 +3,12 @@
 import Geo from '../../geo';
 import {Style} from '../style';
 import {Points} from '../points/points';
-import Collision from '../../labels/collision';
+// import Collision from '../../labels/collision';
 import LabelPoint from '../../labels/label_point';
 import LabelLine from '../../labels/label_line';
+
+import deferredModules from '../../deferred';
+const {Collision} = deferredModules; // loaded conditionally per thread
 
 export let TextStyle = Object.create(Points);
 

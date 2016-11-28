@@ -1,5 +1,5 @@
 // Manage rendering styles
-import ShaderProgram from '../gl/shader_program';
+// import ShaderProgram from '../gl/shader_program';
 import mergeObjects from '../utils/merge';
 import Geo from '../geo';
 import log from '../utils/log';
@@ -9,6 +9,9 @@ import {Lines} from './lines/lines';
 import {Points} from './points/points';
 import {TextStyle} from './text/text';
 import {RasterStyle} from './raster/raster';
+
+import deferredModules from '../deferred';
+const {ShaderProgram} = deferredModules; // loaded conditionally per thread
 
 let fs = require('fs');
 const shaderSrc_accessors = fs.readFileSync(__dirname + '/../gl/shaders/accessors.glsl', 'utf8');

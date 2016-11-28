@@ -6,9 +6,13 @@ import Geo from '../../geo';
 import log from '../../utils/log';
 import Thread from '../../utils/thread';
 import WorkerBroker from '../../utils/worker_broker';
-import Collision from '../../labels/collision';
-import TextSettings from '../text/text_settings';
-import CanvasText from '../text/canvas_text';
+// import Collision from '../../labels/collision';
+// import TextSettings from '../text/text_settings';
+// import CanvasText from '../text/canvas_text';
+import Utils from '../../utils/utils';
+
+import deferredModules from '../../deferred';
+const {CanvasText, TextSettings, Collision} = deferredModules; // loaded conditionally per thread
 
 // namespaces label textures (ensures new texture name when a tile is built multiple times)
 let text_texture_id = 0;
@@ -230,7 +234,7 @@ export const TextLabels = {
         }
 
         // Convert font and text stroke sizes
-        draw.font.px_size = StyleParser.createPropertyCache(draw.font.size || TextSettings.defaults.size, CanvasText.fontPixelSize);
+        draw.font.px_size = StyleParser.createPropertyCache(draw.font.size || TextSettings.defaults.size, fontPixelSize);
         if (draw.font.stroke && draw.font.stroke.width != null) {
             draw.font.stroke.width = StyleParser.createPropertyCache(draw.font.stroke.width, parseFloat);
         }
@@ -277,3 +281,30 @@ export const TextLabels = {
     }
 
 };
+
+// Extract font size and units
+const font_size_re = /((?:[0-9]*\.)?[0-9]+)\s*(px|pt|em|%)?/;
+
+// Convert font CSS-style size ('12px', '14pt', '1.5em', etc.) to pixel size (adjusted for device pixel ratio)
+// Defaults units to pixels if not specified
+function fontPixelSize (size) {
+    if (size == null) {
+        return;
+    }
+    size = (typeof size === 'string') ? size : String(size); // need a string for regex
+
+    let [, px_size, units] = size.match(font_size_re) || [];
+    units = units || 'px';
+
+    if (units === "em") {
+        px_size *= 16;
+    } else if (units === "pt") {
+        px_size /= 0.75;
+    } else if (units === "%") {
+        px_size /= 6.25;
+    }
+
+    px_size = parseFloat(px_size);
+    px_size *= Utils.device_pixel_ratio;
+    return px_size;
+}

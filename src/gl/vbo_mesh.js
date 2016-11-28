@@ -1,7 +1,10 @@
 // Manage rendering for primitives
 import log from '../utils/log';
-import ShaderProgram from './shader_program';
+// import ShaderProgram from './shader_program';
 import VertexArrayObject from './vao';
+
+import deferredModules from '../deferred';
+const {ShaderProgram} = deferredModules; // loaded conditionally per thread
 
 // A single mesh/VBO, described by a vertex layout, that can be drawn with one or more programs
 export default class VBOMesh  {

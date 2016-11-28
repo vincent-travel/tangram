@@ -5,16 +5,19 @@ import {Style} from '../style';
 import {StyleParser} from '../style_parser';
 import gl from '../../gl/constants'; // web workers don't have access to GL context, so import all GL constants
 import VertexLayout from '../../gl/vertex_layout';
-import {buildQuadsForPoints} from '../../builders/points';
+// import {buildQuadsForPoints} from '../../builders/points';
 import Texture from '../../gl/texture';
 import Geo from '../../geo';
 import Vector from '../../vector';
-import Collision from '../../labels/collision';
+// import Collision from '../../labels/collision';
 import LabelPoint from '../../labels/label_point';
-import placePointsOnLine from '../../labels/point_placement';
+// import placePointsOnLine from '../../labels/point_placement';
 import {TextLabels} from '../text/text_labels';
 import {VIEW_PAN_SNAP_TIME} from '../../view';
 import debugSettings from '../../utils/debug_settings';
+
+import deferredModules from '../../deferred';
+const {buildQuadsForPoints, placePointsOnLine, Collision} = deferredModules; // loaded conditionally per thread
 
 let fs = require('fs');
 const shaderSrc_pointsVertex = fs.readFileSync(__dirname + '/points_vertex.glsl', 'utf8');

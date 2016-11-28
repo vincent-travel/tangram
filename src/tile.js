@@ -1,11 +1,13 @@
 import log from './utils/log';
 import Geo from './geo';
 import {StyleParser} from './styles/style_parser';
-import Collision from './labels/collision';
+// import Collision from './labels/collision';
 import WorkerBroker from './utils/worker_broker';
 import Texture from './gl/texture';
 
-import {mat4, vec3} from './utils/gl-matrix';
+// import {mat4, vec3} from './utils/gl-matrix';
+import deferredModules from './deferred';
+const {mat4, vec3, Collision} = deferredModules; // loaded conditionally per thread
 
 export default class Tile {
 

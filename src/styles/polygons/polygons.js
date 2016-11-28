@@ -4,8 +4,11 @@ import {Style} from '../style';
 import {StyleParser} from '../style_parser';
 import gl from '../../gl/constants'; // web workers don't have access to GL context, so import all GL constants
 import VertexLayout from '../../gl/vertex_layout';
-import {buildPolygons, buildExtrudedPolygons} from '../../builders/polygons';
+// import {buildPolygons, buildExtrudedPolygons} from '../../builders/polygons';
 import Geo from '../../geo';
+
+import deferredModules from '../../deferred';
+const {buildPolygons, buildExtrudedPolygons} = deferredModules; // loaded conditionally per thread
 
 let fs = require('fs');
 const shaderSrc_polygonsVertex = fs.readFileSync(__dirname + '/polygons_vertex.glsl', 'utf8');

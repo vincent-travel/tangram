@@ -1,7 +1,9 @@
 import DataSource from './data_source';
 import {GeoJSONSource, GeoJSONTileSource} from './geojson';
 
-import * as topojson from 'topojson-client';
+// import * as topojson from 'topojson-client';
+import deferredModules from '../deferred';
+const {topojson} = deferredModules; // loaded conditionally per thread
 
 /**
  TopoJSON standalone (non-tiled) source

@@ -2,7 +2,7 @@
 
 import {StyleParser} from './style_parser';
 import FeatureSelection from '../selection';
-import ShaderProgram from '../gl/shader_program';
+// import ShaderProgram from '../gl/shader_program';
 import VBOMesh from '../gl/vbo_mesh';
 import Texture from '../gl/texture';
 import Material from '../material';
@@ -11,6 +11,9 @@ import {RasterTileSource} from '../sources/raster';
 import log from '../utils/log';
 import Thread from '../utils/thread';
 import WorkerBroker from '../utils/worker_broker';
+
+import deferredModules from '../deferred';
+const {ShaderProgram} = deferredModules; // loaded conditionally per thread
 
 let fs = require('fs');
 const shaderSrc_selectionFragment = fs.readFileSync(__dirname + '/../gl/shaders/selection_fragment.glsl', 'utf8');

@@ -1,13 +1,14 @@
 /*jshint worker: true*/
 
 import './utils/polyfills';
+import './deferred_main'; // deferred modules selectively loaded in each thread
 
 // The leaflet layer plugin is currently the primary public API
 import {leafletLayer} from './leaflet_layer';
 
 // The scene worker is only activated when a worker thread is instantiated, but must always be loaded
 import Scene from './scene';
-import {SceneWorker} from './scene_worker';
+// import {SceneWorker} from './scene_worker';
 
 // Additional modules are exposed for debugging
 import version from './utils/version';
@@ -28,10 +29,8 @@ import Texture from './gl/texture';
 import Material from './material';
 import Light from './light';
 import WorkerBroker from './utils/worker_broker';
-import {layer_cache} from './styles/layer';
 import {StyleManager} from './styles/style_manager';
 import {StyleParser} from './styles/style_parser';
-import Collision from './labels/collision';
 import FeatureSelection from './selection';
 import CanvasText from './styles/text/canvas_text';
 import debugSettings from './utils/debug_settings';
@@ -55,12 +54,9 @@ var debug = {
     Material,
     Light,
     Scene,
-    SceneWorker,
     WorkerBroker,
-    layer_cache,
     StyleManager,
     StyleParser,
-    Collision,
     FeatureSelection,
     CanvasText,
     debugSettings
