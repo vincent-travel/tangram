@@ -228,9 +228,13 @@ export default class FeatureSelection {
     }
 
     static makeColor(feature, tile, context) {
+        if (this.features[feature.properties.id]) {
+            return this.features[feature.properties.id].color;
+        }
+
         var selector = this.makeEntry(tile);
         selector.feature = {
-            id: feature.id,
+            id: feature.properties.id,
             properties: feature.properties,
             source_name: context.source,
             source_layer: context.layer,
@@ -238,6 +242,7 @@ export default class FeatureSelection {
             tile: this.tiles[tile.key].tile
         };
 
+        this.features[feature.properties.id] = selector;
         return selector.color;
     }
 
@@ -273,3 +278,4 @@ FeatureSelection.map_size = 0;
 FeatureSelection.map_entry = 0;
 FeatureSelection.map_prefix = 0; // set by worker to worker id #
 FeatureSelection.defaultColor = [0, 0, 0, 1];
+FeatureSelection.features = {};
