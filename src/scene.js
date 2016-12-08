@@ -1,4 +1,5 @@
 import log from './utils/log';
+import source from './source';
 import Utils from './utils/utils';
 import * as URLs from './utils/urls';
 import WorkerBroker from './utils/worker_broker';
@@ -35,7 +36,7 @@ export default class Scene {
         this.view = new View(this, options);
         this.tile_manager = new TileManager({ scene: this, view: this.view });
         this.num_workers = options.numWorkers || 2;
-        this.worker_url = options.workerUrl;
+        this.worker_url = options.workerURL;
         if (options.disableVertexArrayObjects === true) {
             VertexArrayObject.disabled = true;
         }
@@ -244,7 +245,20 @@ export default class Scene {
 
     // Get the URL to load the web worker from
     getWorkerUrl() {
-        let worker_url = this.worker_url || URLs.findCurrentURL('tangram.debug.js', 'tangram.min.js');
+        let worker_url;
+
+        // use explicitly defined worker URL
+        if (this.worker_url) {
+            worker_url = this.worker_url;
+        }
+        // use stringified source
+        else if (source._source) {
+            worker_url = URLs.createObjectURL(new Blob([source._source], { type: 'application/javascript' }));
+        }
+        // look for script tag with library name
+        else {
+            worker_url = URLs.findCurrentURL('tangram.debug.js', 'tangram.min.js');
+        }
 
         if (!worker_url) {
             throw new Error("Can't load worker because couldn't find base URL that library was loaded from");

@@ -1,6 +1,7 @@
 /*jshint worker: true*/
 
 import './utils/polyfills';
+import source from './source'; // pointer to Tangram source code for loading workers
 
 // The leaflet layer plugin is currently the primary public API
 import {leafletLayer} from './leaflet_layer';
@@ -80,5 +81,6 @@ if (Thread.is_main) {
 module.exports = {
     leafletLayer,
     debug,
-    version
+    version,
+    source
 };
