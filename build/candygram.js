@@ -27,13 +27,16 @@ module.exports = function (browserify, opts) {
             code = jsesc(code, { quotes: 'single', wrap: true });
 
             // save it to a variable and eval, then save to internal Tangram property for later access
-            code = '(function(){ var _TangramSource = ' + code + ';\n';
-            code += 'eval(_TangramSource);\n';
-            code += 'var target = (typeof module !== "undefined" && module.exports) || (typeof window !== "undefined" && window.Tangram);\n';
-            code += 'if (target && target.source) { target.source._source = _TangramSource; };\n';
-            code += '})();';
+            var out = '(function(){\n';
+            out += 'var _TangramSource = ' + code + ';\n';
+            out += 'var start = +new Date();\n';
+            out += 'eval(_TangramSource);\n';
+            out += 'var target = (typeof module !== "undefined" && module.exports) || (typeof window !== "undefined" && window.Tangram);\n';
+            out += 'if (target && target.source) { target.source._source = _TangramSource; target.source._startTime = start; };\n';
+            out += 'console.log("*** Tangram eval time: ", (+new Date()) - start);\n';
+            out += '})();';
 
-            this.push(new Buffer(code));
+            this.push(new Buffer(out));
             next();
         });
         return stream;

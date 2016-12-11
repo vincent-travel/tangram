@@ -791,7 +791,7 @@ export default class Scene {
     // TODO move to tile manager
     tileManagerBuildDone() {
         if (this.building) {
-            log('info', `Scene: build geometry finished`);
+            log('info', `Scene: build geometry finished`, (+new Date()) - source._startTime);
             if (this.building.resolve) {
                 this.building.resolve(true);
             }
