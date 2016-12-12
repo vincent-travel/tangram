@@ -5,7 +5,7 @@ import Utils from './utils/utils';
 import subscribeMixin from './utils/subscribe';
 import log from './utils/log';
 
-export const VIEW_PAN_SNAP_TIME = 0.5;
+const VIEW_PAN_SNAP_TIME = 0.5;
 
 export default class View {
 

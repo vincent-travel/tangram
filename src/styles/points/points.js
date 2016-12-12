@@ -13,7 +13,7 @@ import Vector from '../../vector';
 import LabelPoint from '../../labels/label_point';
 // import placePointsOnLine from '../../labels/point_placement';
 import {TextLabels} from '../text/text_labels';
-import {VIEW_PAN_SNAP_TIME} from '../../view';
+// import {VIEW_PAN_SNAP_TIME} from '../../view';
 import debugSettings from '../../utils/debug_settings';
 
 import deferredModules from '../../deferred';
@@ -24,6 +24,7 @@ const shaderSrc_pointsVertex = fs.readFileSync(__dirname + '/points_vertex.glsl'
 const shaderSrc_pointsFragment = fs.readFileSync(__dirname + '/points_fragment.glsl', 'utf8');
 
 const PLACEMENT = LabelPoint.PLACEMENT;
+const VIEW_PAN_SNAP_TIME = 0.5;
 
 export var Points = Object.create(Style);
 
