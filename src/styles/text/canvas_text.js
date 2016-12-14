@@ -147,12 +147,12 @@ export default class CanvasText {
     }
 
     // Draw multiple lines of text
-    drawTextMultiLine (lines, [x, y], size, { stroke, stroke_width = 0, transform, align }) {
+    drawTextMultiLine (lines, [x, y], size, { stroke, stroke_width = 0, transform, align }, type) {
         let line_height = size.line_height;
         let height = y;
         for (let line_num=0; line_num < lines.length; line_num++) {
             let line = lines[line_num];
-            this.drawTextLine(line, [x, height], size, { stroke, stroke_width, transform, align });
+            this.drawTextLine(line, [x, height], size, { stroke, stroke_width, transform, align }, type);
             height += line_height;
         }
 
@@ -169,6 +169,9 @@ export default class CanvasText {
             this.context.strokeStyle = 'blue';
             this.context.lineWidth = lineWidth;
             this.context.strokeRect(x + horizontal_buffer, y + vertical_buffer, dpr * collision_size[0], dpr * collision_size[1]);
+            if (type === 'curved'){
+                this.context.strokeRect(x + size.texture_size[0] + horizontal_buffer, y + vertical_buffer, dpr * collision_size[0], dpr * collision_size[1]);
+            }
 
             this.context.restore();
         }
@@ -184,12 +187,16 @@ export default class CanvasText {
             // stroke is applied internally, so the outer border is the edge of the texture
             this.context.strokeRect(x + lineWidth, y + lineWidth, texture_size[0] - 2 * lineWidth, texture_size[1] - 2 * lineWidth);
 
+            if (type === 'curved'){
+                this.context.strokeRect(x + lineWidth + size.texture_size[0], y + lineWidth, texture_size[0] - 2 * lineWidth, texture_size[1] - 2 * lineWidth);
+            }
+
             this.context.restore();
         }
     }
 
     // Draw single line of text at specified location, adjusting for buffer and baseline
-    drawTextLine (line, [x, y], size, { stroke, stroke_width = 0, transform, align }) {
+    drawTextLine (line, [x, y], size, { stroke, stroke_width = 0, transform, align }, type) {
         let dpr = Utils.device_pixel_ratio;
         align = align || 'center';
 
@@ -217,7 +224,8 @@ export default class CanvasText {
         let ty = y + vertical_buffer * 0.75 + line_height;
 
         if (stroke && stroke_width > 0) {
-            this.context.strokeText(str, tx, ty);
+            let shift = (type === 'curved') ? texture_size[0] : 0;
+            this.context.strokeText(str, tx + shift, ty);
         }
         this.context.fillText(str, tx, ty);
     }
@@ -257,7 +265,7 @@ export default class CanvasText {
                                     let size = CanvasText.text_cache[style][word].size;
                                     let line = CanvasText.text_cache[style][word].lines;
 
-                                    this.drawTextMultiLine(line, texture_position, size, text_settings);
+                                    this.drawTextMultiLine(line, texture_position, size, text_settings, type);
 
                                     texcoord = Texture.getTexcoordsForSprite(
                                         texture_position,
@@ -272,19 +280,25 @@ export default class CanvasText {
                                 break;
                             case 'curved':
                                 text_info.texcoords[type] = [];
+                                text_info.texcoords_stroke = [];
                                 for (let i = 0; i < words.length; i++){
                                     let word = words[i];
                                     let texcoord;
+                                    let texcoord_stroke;
 
                                     if (CanvasText.texcoord_cache[tile_key][style][word].texcoord){
                                         texcoord = CanvasText.texcoord_cache[tile_key][style][word].texcoord;
+                                        texcoord_stroke = CanvasText.texcoord_cache[tile_key][style][word].texcoord_stroke;
+
+                                        text_info.texcoords_stroke.push(texcoord_stroke);
                                     }
                                     else {
                                         let texture_position = CanvasText.texcoord_cache[tile_key][style][word].texture_position;
+
                                         let size = CanvasText.text_cache[style][word].size;
                                         let line = CanvasText.text_cache[style][word].lines;
 
-                                        this.drawTextMultiLine(line, texture_position, size, text_settings);
+                                        this.drawTextMultiLine(line, texture_position, size, text_settings, type);
 
                                         texcoord = Texture.getTexcoordsForSprite(
                                             texture_position,
@@ -292,7 +306,21 @@ export default class CanvasText {
                                             texture_size
                                         );
 
+                                        let texture_position_stroke = [
+                                            texture_position[0] + size.texture_size[0],
+                                            texture_position[1]
+                                        ];
+
+                                        texcoord_stroke = Texture.getTexcoordsForSprite(
+                                            texture_position_stroke,
+                                            size.texture_size,
+                                            texture_size
+                                        );
+
                                         CanvasText.texcoord_cache[tile_key][style][word].texcoord = texcoord;
+                                        CanvasText.texcoord_cache[tile_key][style][word].texcoord_stroke = texcoord_stroke;
+
+                                        text_info.texcoords_stroke.push(texcoord_stroke);
                                     }
 
                                     text_info.texcoords[type].push(texcoord);
@@ -387,8 +415,9 @@ export default class CanvasText {
                                     if (!CanvasText.texcoord_cache[tile_key][style][word]) {
 
                                         let size = text_info.size[i].texture_size;
-                                        if (size[0] > column_width) {
-                                            column_width = size[0];
+                                        let width = 2 * size[0];
+                                        if (width > column_width) {
+                                            column_width = width;
                                         }
                                         if (cy + size[1] < max_texture_size) {
                                             texture_position = [cx, cy];
