@@ -188,7 +188,7 @@ Object.assign(Points, {
             Math.min((style.size[1] || style.size), 256)
         ];
 
-        style.angle = (StyleParser.evalProperty(draw.angle, context) * Math.PI / 180) || 0;
+        style.angle = (StyleParser.evalProperty(draw.angle, context) * Math.PI / 180);
         style.sampler = 0; // 0 = sprites
 
         this.computeLayout(style, feature, draw, context, tile);
@@ -313,7 +313,6 @@ Object.assign(Points, {
                         style.label = q.label;
                         style.size = text_info.size.logical_size;
                         style.texcoords = text_info.align[q.label.align].texcoords;
-                        style.angle = q.label.angle || 0;
                         style.sampler = 1; // non-0 = labels
 
                         Style.addFeature.call(this, q.feature, q.draw, q.context);
@@ -577,7 +576,7 @@ Object.assign(Points, {
             texcoords = style.texcoords;
         }
 
-        let angle = style.angle || label.angle;
+        let angle = (style.angle !== undefined) ? style.angle : label.angle;
         let angles = [angle, angle, angle, angle];
         let offset = label.offset;
         let offsets = [offset[0], offset[0], offset[0], offset[0]];
