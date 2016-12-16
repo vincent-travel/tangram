@@ -19,6 +19,7 @@ export default class Tile {
     */
     constructor({ coords, style_zoom, source, worker, view }) {
         this.worker = worker;
+        this.worker_id = worker._tangram_id;
         this.view = view;
         this.source = source;
         this.generation = null;
