@@ -12,6 +12,8 @@ export default class TileManager {
         this.pyramid = new TilePyramid();
         this.visible_coords = {};
         this.queued_coords = [];
+        this.queued_tiles = [];
+        this.last_build_time = 0;
         this.building_tiles = null;
         this.renderable_tiles = [];
         this.active_styles = [];
@@ -27,6 +29,8 @@ export default class TileManager {
         this.pyramid = null;
         this.visible_coords = {};
         this.queued_coords = [];
+        this.queued_tiles = [];
+        this.last_build_time = 0;
         this.scene = null;
         this.view = null;
     }
@@ -282,7 +286,32 @@ export default class TileManager {
         this.tileBuildStart(tile.key);
         this.updateVisibility(tile);
         tile.update();
-        tile.build(this.scene.generation, options);
+        tile.markForBuild(this.scene.generation, options);
+        this.queued_tiles.push(tile);
+    }
+
+    loadQueuedTiles(view) {
+        const now = +new Date();
+
+        // 30, 250
+        if (now - view.last_zoom_time < 50 &&
+            now - this.last_build_time < 250) { // NB: consider disabling for FF
+            return;
+        }
+
+        if (this.queued_tiles.length > 0) {
+            this.last_build_time = +new Date();
+
+            console.log('*** PROCESS TILE BUILD QUEUE ***');
+
+            this.queued_tiles.forEach(tile => tile.buildOnWorker());
+            this.queued_tiles = [];
+        }
+    }
+
+    clearQueuedTiles() {
+        this.queued_tiles = [];
+        this.last_build_time = 0;
     }
 
     // Called on main thread when a web worker completes processing for a single tile (initial load, or rebuild)

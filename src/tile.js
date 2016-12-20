@@ -166,14 +166,19 @@ export default class Tile {
         return WorkerBroker.postMessage(this.worker, ...message);
     }
 
-    build(generation, { fade_in = true } = {}) {
+    markForBuild(generation, { fade_in = true } = {}) {
         this.generation = generation;
         this.fade_in = fade_in;
         if (!this.loaded) {
             this.loading = true;
             this.built = false;
         }
-        return this.workerMessage('self.buildTile', { tile: this.buildAsMessage() }).catch(e => { throw e; });
+    }
+
+    buildOnWorker() {
+        if (!this.canceled && this.worker) {
+            this.workerMessage('self.buildTile', { tile: this.buildAsMessage() }).catch(e => { throw e; });
+        }
     }
 
     /**

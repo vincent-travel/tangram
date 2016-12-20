@@ -13,6 +13,7 @@ import {StyleParser} from './styles/style_parser';
 import SceneLoader from './scene_loader';
 import View from './view';
 import Light from './light';
+import Tile from './tile';
 import TileManager from './tile_manager';
 import DataSource from './sources/data_source';
 import FeatureSelection from './selection';
@@ -426,6 +427,8 @@ export default class Scene {
             this.ready() === false
         );
 
+        this.tile_manager.loadQueuedTiles(this.view);
+
         // Pre-render loop hook
         if (typeof this.preUpdate === 'function') {
             this.preUpdate(will_render);
@@ -470,7 +473,7 @@ export default class Scene {
 
         // Render selection pass (if needed)
         if (this.selection.pendingRequests()) {
-            if (this.view.panning || this.view.zooming) {
+            if (this.view.panning || this.view.isZooming()) {
                 this.selection.clearPendingRequests();
                 return;
             }
@@ -754,6 +757,7 @@ export default class Scene {
             this.resetTime();
 
             // Rebuild visible tiles
+            this.tile_manager.clearQueuedTiles();
             this.tile_manager.pruneToVisibleTiles();
             this.tile_manager.forEachTile(tile => {
                 if (!sources || sources.indexOf(tile.source.name) > -1) {
@@ -762,6 +766,7 @@ export default class Scene {
             });
             this.tile_manager.updateTilesForView(); // picks up additional tiles for any new/changed data sources
             this.tile_manager.checkBuildQueue();    // resolve immediately if no tiles to build
+            this.tile_manager.loadQueuedTiles(this.view);
         }).then(() => {
             // Profiling
             if (profile) {

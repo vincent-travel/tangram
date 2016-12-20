@@ -132,9 +132,8 @@ export default class View {
         if (this.zooming) {
             this.zooming = false;
         }
-        else {
-            this.last_zoom = this.zoom;
-        }
+
+        this.last_zoom_time = +new Date();
 
         let last_tile_zoom = this.tile_zoom;
         let tile_zoom = this.tileZoom(zoom);
@@ -146,7 +145,6 @@ export default class View {
             this.zoom_direction = tile_zoom > last_tile_zoom ? 1 : -1;
         }
 
-        this.last_zoom = this.zoom;
         this.zoom = zoom;
         this.tile_zoom = tile_zoom;
 
@@ -155,8 +153,11 @@ export default class View {
     }
 
     startZoom () {
-        this.last_zoom = this.zoom;
         this.zooming = true;
+    }
+
+    isZooming () {
+        return ((+new Date()) - this.last_zoom_time < 50);
     }
 
     // Choose the base zoom level to use for a given fractional zoom
