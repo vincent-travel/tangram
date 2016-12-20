@@ -25,6 +25,7 @@ export default class View {
         this.pan_snap_timer = 0;
         this.zooming = false;
         this.zoom_direction = 0;
+        this.center_dir_persist = 0;
 
         // Size of viewport in CSS pixels, device pixels, and mercator meters
         this.size = {
@@ -113,6 +114,27 @@ export default class View {
             if (!this.center || lng !== this.center.lng || lat !== this.center.lat) {
                 changed = true;
                 this.center = { lng: Geo.wrapLng(lng), lat };
+
+                // if (this.last_center) {
+                //     let dx = this.center.lng - this.last_center.lng;
+                //     let dy = this.center.lat - this.last_center.lat;
+                //     if (Math.abs(dx) > Math.abs(dy)) {
+                //         this.center_dir = dx > 0 ? 'right' : 'left';
+                //     }
+                //     else {
+                //         this.center_dir = dy > 0 ? 'up' : 'down';
+                //     }
+                // }
+
+                // if (this.center_dir === this.last_center_dir) {
+                //     this.center_dir_persist++;
+                // }
+                // else {
+                //     this.center_dir_persist = 0;
+                // }
+
+                // this.last_center = this.center;
+                // this.last_center_dir = this.center_dir;
             }
         }
 
@@ -241,8 +263,22 @@ export default class View {
         let ne = Geo.tileForMeters([this.bounds.ne.x, this.bounds.ne.y], z);
 
         let coords = [];
-        for (let x = sw.x - this.buffer; x <= ne.x + this.buffer; x++) {
-            for (let y = ne.y - this.buffer; y <= sw.y + this.buffer; y++) {
+        let left = sw.x - this.buffer;
+        let right = ne.x + this.buffer;
+        let up = ne.y - this.buffer;
+        let down = sw.y + this.buffer;
+        // let move_buffer = 2;
+        // if (this.center_dir_persist > 3) {
+        //     switch (this.center_dir) {
+        //         case 'left':    left -= move_buffer; break;
+        //         case 'right':   right += move_buffer; break;
+        //         case 'up':      up -= move_buffer; break;
+        //         case 'down':    down += move_buffer; break;
+        //     }
+        // }
+
+        for (let x = left; x <= right; x++) {
+            for (let y = up; y <= down; y++) {
                 coords.push(Tile.coord({ x, y, z }));
             }
         }
