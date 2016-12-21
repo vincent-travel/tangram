@@ -18,6 +18,11 @@ let fs = require('fs');
 const shaderSrc_pointsVertex = fs.readFileSync(__dirname + '/points_vertex.glsl', 'utf8');
 const shaderSrc_pointsFragment = fs.readFileSync(__dirname + '/points_fragment.glsl', 'utf8');
 
+const pre_angles_normalize = 128 / Math.PI;
+const angles_normalize = 16384 / Math.PI;
+const offsets_normalize = 64;
+const texcoord_normalize = 65535;
+
 export var Points = Object.create(Style);
 
 // Mixin text label methods
@@ -534,7 +539,10 @@ Object.assign(Points, {
                 shape_w: sampler,
                 curve,
                 texcoord_scale,
-                texcoord_normalize: 65535
+                texcoord_normalize,
+                pre_angles_normalize,
+                angles_normalize,
+                offsets_normalize
             }
         );
     },
@@ -586,6 +594,7 @@ Object.assign(Points, {
     buildArticulatedLabel (label, style, vertex_data) {
         let vertex_template = this.makeVertexTemplate(style);
         let curve = 1;
+        let angle = label.angle;
 
         for (let i = 0; i < label.num_segments; i++){
             let size = style.size[label.type][i];
@@ -601,7 +610,7 @@ Object.assign(Points, {
             this.buildQuad(
                 [position],               // position
                 size,                           // size in pixels
-                0,                          // angle in degrees
+                angle,                          // angle in degrees
                 angles,
                 pre_angles,
                 style.sampler,                  // texture sampler to use
@@ -627,7 +636,7 @@ Object.assign(Points, {
             this.buildQuad(
                 [position],               // position
                 size,                           // size in pixels
-                0,                          // angle in degrees
+                angle,                          // angle in degrees
                 angles,
                 pre_angles,
                 style.sampler,                  // texture sampler to use
