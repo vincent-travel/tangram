@@ -23,6 +23,7 @@ export default class VBOMesh  {
         this.fade_in_time = options.fade_in_time || 0; // optional time to fade in mesh
 
         this.vertex_count = this.vertex_data.byteLength / this.vertex_layout.stride;
+        this.byte_size = this.vertex_data.byteLength;
         this.vaos = {}; // map of VertexArrayObjects, keyed by program
 
         this.toggle_element_array = false;
@@ -34,6 +35,7 @@ export default class VBOMesh  {
             this.element_buffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.element_buffer);
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.element_data, this.data_usage);
+            this.byte_size += this.element_data.byteLength;
         }
         else {
             this.geometry_count = this.vertex_count / this.vertices_per_geometry;
